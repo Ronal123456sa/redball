@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pelotita Roja Mejorada - Aventura con Rebote</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="juego">
+    <canvas id="c" width="800" height="500"></canvas>
+    <div id="interfaz">
+      <div class="estadística">📏 <span id="d">0</span>m</div>
+      <div class="estadística">🔥 <span id="x">x1.0</span></div>
+      <div class="estadística">📊 Nivel <span id="n">1</span></div>
+      <div class="estadística">⚡ <span id="v">1.0x</span></div>
+      <div class="estadística">🏆 <span id="p">0</span></div>
+    </div>
+    <div id="ir">
+      <h2>¡Game Over!</h2>
+      <p>Nivel alcanzado: <span id="nl">1</span></p>
+      <p id="pf">Puntuación: 0</p>
+      <small>Presiona ESPACIO para reiniciar</small>
+    </div>
+    <button id="m" onclick="cambiarModo(Estado.modo ? 0 : 1)">🌙 Noche</button>
+  </div>
+
+  <script src="js/app.js"></script>
+
+</body>
+</html>
