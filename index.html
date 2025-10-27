@@ -4,630 +4,474 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pelotita Roja Mejorada - Aventura con Rebote</title>
-<!-- <link rel="stylesheet" href="css/style.css"> -->
-<style>
-   * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+  <!-- <link rel="stylesheet" href="css/style.css"> -->
+   <style>
+     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
-      transition: background 0.5s;
+      background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%);
       overflow: hidden;
     }
-
-    body.night-mode {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    body.nieve {
+      background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
     }
-
-    body.snow-mode {
-      background: linear-gradient(135deg, #e8f4f8 0%, #b3e5fc 100%);
+    #jueir {
+      position: relative;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.5);
     }
-
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.5s;
-      max-width: 1000px;
-      width: 100%;
-    }
-
-    body.night-mode .container {
-      background: rgba(0, 0, 0, 0.4);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    body.snow-mode .container {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(100, 200, 255, 0.3);
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .theme-btn {
-      padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 2px solid white;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-      font-size: 0.9em;
-    }
-
-    .theme-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.05);
-    }
-
-    .theme-btn.active {
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-    }
-
-    h1 {
-      color: white;
-      text-align: center;
-      margin-bottom: 15px;
-      font-size: 2.2em;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .level-info {
-      color: white;
-      text-align: center;
-      margin-bottom: 15px;
-      font-size: 1.1em;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    .info {
-      color: white;
-      text-align: center;
-      margin-bottom: 15px;
-      font-size: 0.9em;
-      line-height: 1.5;
-    }
-
-    #gameCanvas {
-      background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 100%);
+    #c {
       display: block;
-      margin: 0 auto;
-      border: 8px solid rgba(255, 255, 255, 0.3);
-      border-radius: 15px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-      max-width: 100%;
-      height: auto;
-      transition: background 0.5s;
+      background: linear-gradient(to bottom, #0f0f1e 0%, #1a1a2e 100%);
+      border: 3px solid #2a2a3e;
     }
-
-    body.night-mode #gameCanvas {
-      background: linear-gradient(180deg, #0f3460 0%, #1a4d6d 100%);
+    body.nieve #c {
+      background: linear-gradient(to bottom, #B3E5FC 0%, #E1F5FE 100%);
+      border: 3px solid #81D4FA;
     }
-
-    body.snow-mode #gameCanvas {
-      background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
-    }
-
-    .stats {
-      color: white;
-      text-align: center;
-      margin-top: 15px;
-      font-size: 1em;
+    #interfaz {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
       display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      pointer-events: none;
     }
-
-    .stat-item {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 8px 16px;
-      border-radius: 8px;
+    body.nieve #interfaz {
+      color: #01579B;
+      text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
     }
-
-    .game-over {
-      position: fixed;
+    #ir {
+      display: none;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.95);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
+      background: rgba(0,0,0,0.9);
+      color: #fff;
+      padding: 30px 50px;
+      border-radius: 15px;
       text-align: center;
-      font-size: 1.5em;
-      z-index: 1000;
-      display: none;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-      border: 3px solid #FF4444;
+      box-shadow: 0 0 30px rgba(255,0,0,0.5);
     }
-
-    .game-over h2 {
-      margin-bottom: 20px;
-      color: #FF4444;
-      font-size: 2em;
+    body.nieve #ir {
+      background: rgba(255,255,255,0.95);
+      color: #01579B;
+      box-shadow: 0 0 30px rgba(0,150,255,0.5);
     }
-
-    .game-over button {
-      margin-top: 20px;
-      padding: 15px 40px;
-      font-size: 1.1em;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: bold;
-    }
-
-    .game-over button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
-    }
-
-    .moon {
+    #ir h2 { font-size: 36px; margin-bottom: 20px; color: #ff4444; }
+    body.nieve #ir h2 { color: #0288D1; }
+    #ir p { font-size: 20px; margin: 10px 0; }
+    #ir small { display: block; margin-top: 20px; opacity: 0.7; }
+    #m {
       position: absolute;
-      top: 50px;
-      right: 100px;
-      width: 80px;
-      height: 80px;
-      background: radial-gradient(circle at 30px 30px, #f9f3c5, #e6d894);
-      border-radius: 50%;
-      box-shadow: 0 0 40px rgba(249, 243, 197, 0.7);
-      display: none;
+      top: 10px;
+      right: 10px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+      font-weight: bold;
+      transition: all 0.3s;
     }
-
-    body.night-mode .moon {
-      display: block;
+    body.nieve #m {
+      background: rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.2);
+      color: #01579B;
     }
-</style>
+    #m:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+    .estadística { display: flex; align-items: center; gap: 8px; }
+   </style>
 </head>
 <body>
-  <div class="moon"></div>
-  <div class="container">
-    <div class="controls">
-      <button class="theme-btn" onclick="changeMode('rain')">🌧️ Lluvia</button>
-      <button class="theme-btn" onclick="changeMode('night')">🌙 Oscuro</button>
-      <button class="theme-btn" onclick="changeMode('snow')">❄️ Hielo</button>
-      <div class="stat-item">Modo Actual: <span id="modeDisplay">🌧️ Lluvia</span></div>
+  <div id="juego">
+    <canvas id="c" width="800" height="500"></canvas>
+    <div id="interfaz">
+      <div class="estadística">📏 <span id="d">0</span>m</div>
+      <div class="estadística">🔥 <span id="x">x1.0</span></div>
+      <div class="estadística">📊 Nivel <span id="n">1</span></div>
+      <div class="estadística">⚡ <span id="v">1.0x</span></div>
+      <div class="estadística">🏆 <span id="p">0</span></div>
     </div>
-    <h1>🔴 Pelotita Roja Mejorada</h1>
-    <div class="level-info">
-      📊 Nivel: <span id="level">1</span> | 🚀 Velocidad: <span id="speedLevel">1x</span>
+    <div id="ir">
+      <h2>¡Game Over!</h2>
+      <p>Nivel alcanzado: <span id="nl">1</span></p>
+      <p id="pf">Puntuación: 0</p>
+      <small>Presiona ESPACIO para reiniciar</small>
     </div>
-    <div class="info">
-      <strong>Controles:</strong> ⬅️ Izquierda | ➡️ Derecha | ⬆️ Saltar<br>
-      🪜 Sube escaleras 📍 Esquiva obstáculos ⚠️ Si chocas, presiona ESPACIO
-    </div>
-    <canvas id="gameCanvas" width="900" height="500"></canvas>
-    <div class="stats">
-      <div class="stat-item">Distancia: <span id="score">0</span></div>
-      <div class="stat-item">Multiplicador: <span id="multiplier">x1.0</span></div>
-      <div class="stat-item">Puntuación: <span id="finalPoints">0</span></div>
-    </div>
+    <button id="m" onclick="cambiarModo(Estado.modo ? 0 : 1)">🌙 Noche</button>
   </div>
 
-  <div class="game-over" id="gameOverScreen">
-    <h2>💥 ¡CHOCASTE!</h2>
-    <p>Nivel alcanzado: <span id="levelReached">1</span></p>
-    <p id="finalScore">Puntuación Final: 0</p>
-    <button onclick="restartGame()">Presiona ESPACIO o haz clic para reiniciar</button>
-  </div>
-
-  <script> 
-    const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-const pantallaGameOver = document.getElementById("gameOverScreen");
-
-// Estado unificado
-const estado = {
-  modo: 'noche', terminado: false, distancia: 0, nivel: 1,
-  multiplicador: 1, velocidad: 1, gravedad: 0.5
+  <script>
+    const lienzo = document.getElementById("c"), contexto = lienzo.getContext("2d");
+let Estado = { // Estado del juego
+  modo: 0, finalizado: 0, distancia: 0, nivel: 1, multiplicador: 1, velocidad: 1,
+  particulas: [], hielo: [], escaleras: [], obstaculos: [], pinchos: [], enemigos: [], bombas: [], 
+  explosiones: [], particulasSalto: [], contadores: [0,0,0,0,0]
 };
 
-const pelota = {
-  x: 100, y: 380, radio: 15, dx: 0, dy: 0, velocidad: 6,
-  poderSalto: 14, puedeSaltar: true, enfriamientoSalto: 0,
-  invencible: false, tiempoInvencible: 0
-};
+let Bola = { x: 100, y: 380, radio: 15, dx: 0, dy: 0, velocidad: 6, salto: 14, enSuelo: 1, enfriamiento: 0, invencible: 0, tiempoInvencible: 0 };
+let Teclas = { derecha: 0, izquierda: 0, arriba: 0 };
+let Plataforma = { x: 0, y: 420, ancho: lienzo.width, alto: 80 };
 
-const plataforma = { x: 0, y: 420, ancho: canvas.width, alto: 80 };
-const teclas = { derecha: false, izquierda: false, arriba: false };
-const entidades = { particulas: [], bloquesHielo: [], obstaculos: [], escaleras: [], puas: [], enemigos: [], bombas: [], explosiones: [], particulasSalto: [] };
-const contadores = { obstaculos: 0, escaleras: 0, puas: 0, enemigos: 0, bombas: 0 };
+// Configuración [ancho, alto, velocidad, intervalo, probabilidad]
+const Configuracion = [
+  [() => 25 + ~~(Math.random() * 25), () => 35 + ~~(Math.random() * 35), 5, 50, 0.3],
+  [60, () => 80 + ~~(Math.random() * 60), 5, 140, 1],
+  [30, 20, 5, 80, 0.5],
+  [15, 15, 4, 160, 0.6],
+  [12, 12, 3, 200, 0.7]
+];
 
-// Configuraciones de entidades
-const CFG = {
-  obstaculo: { w: () => 25 + Math.random() * 25, h: () => 35 + Math.random() * 35, v: 5, int: 50, prob: 0.3, puntos: 10 },
-  escalera: { w: 60, h: () => 80 + Math.random() * 60, v: 5, int: 140, prob: 1, puntos: 20, pasos: 4 },
-  pua: { w: 30, h: 20, v: 5, int: 80, prob: 0.5, puntos: 0 },
-  enemigo: { r: 15, v: 4, int: 160, prob: 0.6, puntos: 0 },
-  bomba: { r: 12, v: 3, int: 200, prob: 0.7, puntos: 30 }
-};
-
-// ==================== INICIALIZACIÓN ====================
 function inicializarParticulas() {
-  entidades.particulas = [];
-  const cant = estado.modo === 'lluvia' ? 150 : 100;
-  for (let i = 0; i < cant; i++) {
-    entidades.particulas.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      longitud: estado.modo === 'lluvia' ? 10 + Math.random() * 10 : 0,
-      tamaño: estado.modo === 'nieve' ? 3 + Math.random() * 5 : 1,
-      velocidad: estado.modo === 'lluvia' ? 5 + Math.random() * 5 : 1 + Math.random() * 2,
-      opacidad: Math.random() * 0.5 + 0.3,
-      viento: Math.random() * 2 - 1
-    });
-  }
+  Estado.particulas = Array(Estado.modo ? 100 : 150).fill().map(() => ({
+    x: ~~(Math.random() * lienzo.width),
+    y: ~~(Math.random() * lienzo.height),
+    longitud: Estado.modo ? 0 : 10 + ~~(Math.random() * 10),
+    tamaño: Estado.modo ? 3 + Math.random() * 5 : 1,
+    velocidad: Estado.modo ? 1 + Math.random() * 2 : 5 + Math.random() * 5,
+    opacidad: Math.random() * 0.5 + 0.3,
+    vientoX: Math.random() * 2 - 1
+  }));
 }
 
-function inicializarBloquesHielo() {
-  entidades.bloquesHielo = estado.modo === 'nieve' ? Array(10).fill().map(() => ({
-    x: Math.random() * canvas.width, y: Math.random() * 300,
-    ancho: 40 + Math.random() * 40, alto: 20 + Math.random() * 20,
+function inicializarHielo() {
+  Estado.hielo = Estado.modo ? Array(10).fill().map(() => ({
+    x: ~~(Math.random() * lienzo.width), y: ~~(Math.random() * 300),
+    ancho: 40 + ~~(Math.random() * 40), alto: 20 + ~~(Math.random() * 20),
     rotacion: Math.random() * Math.PI * 2, velocidad: 0.5 + Math.random()
   })) : [];
 }
 
 function cambiarModo(modo) {
-  estado.modo = modo;
-  document.body.className = modo === 'noche' ? 'modo-noche' : modo === 'nieve' ? 'modo-nieve' : '';
-  document.getElementById("modeDisplay").textContent = { lluvia: '🌧️ Lluvia', noche: '🌙 Oscuro', nieve: '❄️ Hielo' }[modo];
+  Estado.modo = modo;
+  document.body.className = modo ? 'nieve' : '';
+  document.getElementById("m").contenidoDeTexto = modo ? '❄️ Hielo' : '🌙 Noche';
   inicializarParticulas();
-  inicializarBloquesHielo();
+  inicializarHielo();
 }
 
-// ==================== CONTROLES ====================
-document.addEventListener("keydown", e => {
-  if (e.code === "ArrowRight") teclas.derecha = true;
-  if (e.code === "ArrowLeft") teclas.izquierda = true;
-  if (e.code === "ArrowUp") {
-    teclas.arriba = true;
-    if (pelota.puedeSaltar && pelota.enfriamientoSalto <= 0) {
-      pelota.dy = -pelota.poderSalto;
-      pelota.puedeSaltar = false;
-      pelota.enfriamientoSalto = 10;
-      crearParticulasSalto();
+document.addEventListener("keydown", evento => {
+  if (evento.code === "ArrowRight") Teclas.derecha = 1;
+  if (evento.code === "ArrowLeft") Teclas.izquierda = 1;
+  if (evento.code === "ArrowUp") {
+    Teclas.arriba = 1;
+    if (Bola.enSuelo && Bola.enfriamiento <= 0) {
+      Bola.dy = -Bola.salto;
+      Bola.enSuelo = 0;
+      Bola.enfriamiento = 10;
+      for (let i = 0; i < 8; i++) {
+        Estado.particulasSalto.push({
+          x: Bola.x, y: Bola.y + Bola.radio,
+          dx: (Math.random() - 0.5) * 4, dy: -Math.random() * 3,
+          tamaño: 2 + Math.random() * 3, vida: 20 + ~~(Math.random() * 10)
+        });
+      }
     }
   }
-  if (e.code === "Space" && estado.terminado) reiniciarJuego();
+  if (evento.code === "Space" && Estado.finalizado) reiniciar();
 });
 
-document.addEventListener("keyup", e => {
-  if (e.code === "ArrowRight") teclas.derecha = false;
-  if (e.code === "ArrowLeft") teclas.izquierda = false;
-  if (e.code === "ArrowUp") teclas.arriba = false;
+document.addEventListener("keyup", evento => {
+  if (evento.code === "ArrowRight") Teclas.derecha = 0;
+  if (evento.code === "ArrowLeft") Teclas.izquierda = 0;
+  if (evento.code === "ArrowUp") Teclas.arriba = 0;
 });
 
-// ==================== DIBUJO ====================
-function dibujarParticulas() {
-  if (estado.modo === 'lluvia') {
-    ctx.strokeStyle = 'rgba(200, 220, 255, 0.4)';
-    ctx.lineWidth = 1;
-    entidades.particulas.forEach(p => {
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(p.x - 2, p.y + p.longitud);
-      ctx.stroke();
-      p.y += p.velocidad * estado.velocidad;
-      p.x -= 2;
-      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+function dibujar() {
+  contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+  
+  // Plataforma
+  let gradiente = contexto.createLinearGradient(0, Plataforma.y, 0, Plataforma.y + Plataforma.alto);
+  gradiente.addColorStop(0, Estado.modo ? "#B3E5FC" : "#2a2a2a");
+  gradiente.addColorStop(1, Estado.modo ? "#4FC3F7" : "#1a1a1a");
+  contexto.fillStyle = gradiente;
+  contexto.fillRect(Plataforma.x, Plataforma.y, Plataforma.ancho, Plataforma.alto);
+
+  // Partículas
+  if (!Estado.modo) {
+    contexto.strokeStyle = 'rgba(100, 150, 200, 0.5)';
+    contexto.lineWidth = 1;
+    Estado.particulas.forEach(particula => {
+      contexto.beginPath();
+      contexto.moveTo(particula.x, particula.y);
+      contexto.lineTo(particula.x - 2, particula.y + particula.longitud);
+      contexto.stroke();
+      particula.y += particula.velocidad * Estado.velocidad;
+      particula.x -= 2;
+      if (particula.y > lienzo.height) { particula.y = -10; particula.x = ~~(Math.random() * lienzo.width); }
     });
-  } else if (estado.modo === 'nieve') {
-    entidades.particulas.forEach(p => {
-      ctx.fillStyle = `rgba(255, 255, 255, ${p.opacidad})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.tamaño, 0, Math.PI * 2);
-      ctx.fill();
-      p.y += p.velocidad * estado.velocidad;
-      p.x += p.viento;
-      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-    });
-  }
-}
-
-function dibujarBloquesHielo() {
-  if (estado.modo !== 'nieve') return;
-  entidades.bloquesHielo.forEach(h => {
-    ctx.save();
-    ctx.translate(h.x + h.ancho/2, h.y + h.alto/2);
-    ctx.rotate(h.rotacion);
-    ctx.fillStyle = 'rgba(200, 230, 255, 0.7)';
-    ctx.fillRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.fillRect(-h.ancho/2 + 5, -h.alto/2 + 5, h.ancho/3, h.alto/3);
-    ctx.restore();
-    h.x -= h.velocidad * estado.velocidad;
-    h.rotacion += 0.01;
-    if (h.x + h.ancho < 0) { h.x = canvas.width; h.y = Math.random() * 300; }
-  });
-}
-
-function dibujarPelota() {
-  if (pelota.invencible && Math.floor(pelota.tiempoInvencible / 5) % 2 === 0) return;
-  const grad = ctx.createRadialGradient(pelota.x - 5, pelota.y - 5, 0, pelota.x, pelota.y, pelota.radio);
-  grad.addColorStop(0, "#FF6666");
-  grad.addColorStop(1, "#CC0000");
-  ctx.beginPath();
-  ctx.arc(pelota.x, pelota.y, pelota.radio, 0, Math.PI * 2);
-  ctx.fillStyle = grad;
-  ctx.fill();
-  ctx.strokeStyle = "rgba(0,0,0,0.3)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
-
-function dibujarPlataforma() {
-  const grad = ctx.createLinearGradient(0, plataforma.y, 0, plataforma.y + plataforma.alto);
-  if (estado.modo === 'nieve') {
-    grad.addColorStop(0, "#B3E5FC");
-    grad.addColorStop(1, "#4FC3F7");
   } else {
-    grad.addColorStop(0, "#32CD32");
-    grad.addColorStop(1, "#1a7a1a");
-  }
-  ctx.fillStyle = grad;
-  ctx.fillRect(plataforma.x, plataforma.y, plataforma.ancho, plataforma.alto);
-}
-
-function dibujarEntidad(tipo, e) {
-  if (tipo === 'obstaculo') {
-    const grad = ctx.createLinearGradient(e.x, e.y, e.x, e.y + e.alto);
-    grad.addColorStop(0, "#FF6B6B");
-    grad.addColorStop(1, "#C92A2A");
-    ctx.fillStyle = grad;
-    ctx.fillRect(e.x, e.y, e.ancho, e.alto);
-  } else if (tipo === 'escalera') {
-    const paso = e.ancho / e.pasos, altura = e.alto / e.pasos;
-    for (let i = 0; i < e.pasos; i++) {
-      ctx.fillStyle = "#D4A574";
-      ctx.fillRect(e.x + i * paso, e.y + i * altura, paso, altura);
-      ctx.strokeStyle = "#5D4E06";
-      ctx.strokeRect(e.x + i * paso, e.y + i * altura, paso, altura);
-    }
-  } else if (tipo === 'pua') {
-    ctx.fillStyle = '#8B0000';
-    ctx.beginPath();
-    ctx.moveTo(e.x, e.y + e.alto);
-    ctx.lineTo(e.x + e.ancho/2, e.y);
-    ctx.lineTo(e.x + e.ancho, e.y + e.alto);
-    ctx.fill();
-  } else if (tipo === 'enemigo' || tipo === 'bomba') {
-    ctx.fillStyle = tipo === 'enemigo' ? '#8A2BE2' : '#333333';
-    ctx.beginPath();
-    ctx.arc(e.x, e.y, e.radio, 0, Math.PI * 2);
-    ctx.fill();
-    if (tipo === 'bomba') {
-      ctx.fillStyle = '#FF0000';
-      ctx.fillRect(e.x - 2, e.y - e.radio - 5, 4, 8);
-    }
-  }
-}
-
-function crearParticulasSalto() {
-  for (let i = 0; i < 8; i++) {
-    entidades.particulasSalto.push({
-      x: pelota.x, y: pelota.y + pelota.radio,
-      dx: (Math.random() - 0.5) * 4, dy: -Math.random() * 3,
-      tamaño: 2 + Math.random() * 3, vida: 20 + Math.random() * 10
+    Estado.particulas.forEach(particula => {
+      contexto.fillStyle = `rgba(255, 255, 255, ${particula.opacidad})`;
+      contexto.beginPath();
+      contexto.arc(particula.x, particula.y, particula.tamaño, 0, Math.PI * 2);
+      contexto.fill();
+      particula.y += particula.velocidad * Estado.velocidad;
+      particula.x += particula.vientoX;
+      if (particula.y > lienzo.height) { particula.y = -10; particula.x = ~~(Math.random() * lienzo.width); }
+      if (particula.x < 0 || particula.x > lienzo.width) particula.x = particula.x < 0 ? lienzo.width : 0;
     });
   }
-}
 
-function dibujarParticulasSalto() {
-  for (let i = entidades.particulasSalto.length - 1; i >= 0; i--) {
-    const p = entidades.particulasSalto[i];
-    ctx.fillStyle = '#FFAA00';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.tamaño, 0, Math.PI * 2);
-    ctx.fill();
-    p.x += p.dx;
-    p.y += p.dy;
-    p.dy += 0.1;
-    p.vida--;
-    if (p.vida <= 0) entidades.particulasSalto.splice(i, 1);
+  // Hielo
+  Estado.hielo.forEach(h => {
+    contexto.save();
+    contexto.translate(h.x + h.ancho/2, h.y + h.alto/2);
+    contexto.rotate(h.rotacion);
+    contexto.fillStyle = 'rgba(200, 230, 255, 0.7)';
+    contexto.fillRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
+    contexto.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    contexto.lineWidth = 2;
+    contexto.strokeRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
+    contexto.restore();
+    h.x -= h.velocidad * Estado.velocidad;
+    h.rotacion += 0.01;
+    if (h.x + h.ancho < 0) { h.x = lienzo.width; h.y = ~~(Math.random() * 300); }
+  });
+
+  // Escaleras
+  Estado.escaleras.forEach(escalera => {
+    let anchoPaso = escalera.ancho / 4, altoPaso = escalera.alto / 4;
+    for (let i = 0; i < 4; i++) {
+      contexto.fillStyle = "#D4A574";
+      contexto.fillRect(escalera.x + i * anchoPaso, escalera.y + i * altoPaso, anchoPaso, altoPaso);
+      contexto.strokeStyle = "#5D4E06";
+      contexto.strokeRect(escalera.x + i * anchoPaso, escalera.y + i * altoPaso, anchoPaso, altoPaso);
+    }
+  });
+
+  // Obstáculos
+  Estado.obstaculos.forEach(obstaculo => {
+    let gradiente = contexto.createLinearGradient(obstaculo.x, obstaculo.y, obstaculo.x, obstaculo.y + obstaculo.alto);
+    gradiente.addColorStop(0, "#FF6B6B");
+    gradiente.addColorStop(1, "#C92A2A");
+    contexto.fillStyle = gradiente;
+    contexto.fillRect(obstaculo.x, obstaculo.y, obstaculo.ancho, obstaculo.alto);
+  });
+
+  // Pinchos
+  Estado.pinchos.forEach(pincho => {
+    contexto.fillStyle = '#8B0000';
+    contexto.beginPath();
+    contexto.moveTo(pincho.x, pincho.y + pincho.alto);
+    contexto.lineTo(pincho.x + pincho.ancho/2, pincho.y);
+    contexto.lineTo(pincho.x + pincho.ancho, pincho.y + pincho.alto);
+    contexto.fill();
+  });
+
+  // Enemigos
+  Estado.enemigos.forEach(enemigo => {
+    contexto.fillStyle = '#8A2BE2';
+    contexto.beginPath();
+    contexto.arc(enemigo.x, enemigo.y, enemigo.radio, 0, Math.PI * 2);
+    contexto.fill();
+  });
+
+  // Bombas
+  Estado.bombas.forEach(bomba => {
+    contexto.fillStyle = '#333';
+    contexto.beginPath();
+    contexto.arc(bomba.x, bomba.y, bomba.radio, 0, Math.PI * 2);
+    contexto.fill();
+    contexto.fillStyle = '#F00';
+    contexto.fillRect(bomba.x - 2, bomba.y - bomba.radio - 5, 4, 8);
+  });
+
+  // Explosiones
+  Estado.explosiones.forEach((explosion, indice) => {
+    contexto.fillStyle = `rgba(255, ${100 + explosion.frame * 10}, 0, ${1 - explosion.frame/20})`;
+    contexto.beginPath();
+    contexto.arc(explosion.x, explosion.y, explosion.radio, 0, Math.PI * 2);
+    contexto.fill();
+    explosion.frame++;
+    explosion.radio += 2;
+    if (explosion.frame > 20) Estado.explosiones.splice(indice, 1);
+  });
+
+  // Partículas de salto
+  Estado.particulasSalto.forEach((particula, indice) => {
+    contexto.fillStyle = '#FA0';
+    contexto.beginPath();
+    contexto.arc(particula.x, particula.y, particula.tamaño, 0, Math.PI * 2);
+    contexto.fill();
+    particula.x += particula.dx;
+    particula.y += particula.dy;
+    particula.dy += 0.1;
+    if (--particula.vida <= 0) Estado.particulasSalto.splice(indice, 1);
+  });
+
+  // Bola
+  if (!Bola.invencible || ~~(Bola.tiempoInvencible / 5) % 2) {
+    let gradiente = contexto.createRadialGradient(Bola.x - 5, Bola.y - 5, 0, Bola.x, Bola.y, Bola.radio);
+    gradiente.addColorStop(0, "#F66");
+    gradiente.addColorStop(1, "#C00");
+    contexto.fillStyle = gradiente;
+    contexto.beginPath();
+    contexto.arc(Bola.x, Bola.y, Bola.radio, 0, Math.PI * 2);
+    contexto.fill();
+    contexto.strokeStyle = "rgba(0,0,0,0.3)";
+    contexto.lineWidth = 2;
+    contexto.stroke();
   }
 }
 
-function dibujarExplosiones() {
-  for (let i = entidades.explosiones.length - 1; i >= 0; i--) {
-    const e = entidades.explosiones[i];
-    ctx.fillStyle = `rgba(255, ${100 + e.cuadro * 10}, 0, ${1 - e.cuadro/20})`;
-    ctx.beginPath();
-    ctx.arc(e.x, e.y, e.radio, 0, Math.PI * 2);
-    ctx.fill();
-    e.cuadro++;
-    e.radio += 2;
-    if (e.cuadro > 20) entidades.explosiones.splice(i, 1);
-  }
+function colisionCaja(objeto) {
+  return Bola.x + Bola.radio > objeto.x && Bola.x - Bola.radio < objeto.x + objeto.ancho && 
+         Bola.y + Bola.radio > objeto.y && Bola.y - Bola.radio < objeto.y + objeto.alto;
 }
 
-// ==================== GENERACIÓN Y ACTUALIZACIÓN UNIFICADA ====================
-function generar(tipo) {
-  const cfg = CFG[tipo];
-  const obj = { x: canvas.width, velocidad: cfg.v * estado.velocidad };
-  
-  if (tipo === 'obstaculo') Object.assign(obj, { y: plataforma.y - cfg.h(), ancho: cfg.w(), alto: cfg.h() });
-  else if (tipo === 'escalera') Object.assign(obj, { y: plataforma.y - cfg.h(), ancho: cfg.w, alto: cfg.h(), pasos: cfg.pasos });
-  else if (tipo === 'pua') Object.assign(obj, { y: plataforma.y - 20, ancho: cfg.w, alto: cfg.h });
-  else Object.assign(obj, { y: plataforma.y - 20, radio: cfg.r });
-  
-  entidades[tipo + 's'].push(obj);
+function colisionCirculo(objeto) {
+  let dx = Bola.x - objeto.x, dy = Bola.y - objeto.y;
+  return Math.sqrt(dx * dx + dy * dy) < Bola.radio + objeto.radio;
 }
 
-function colisionCaja(obj) {
-  return pelota.x + pelota.radio > obj.x && pelota.x - pelota.radio < obj.x + obj.ancho &&
-         pelota.y + pelota.radio > obj.y && pelota.y - pelota.radio < obj.y + obj.alto;
-}
-
-function colisionCirculo(obj) {
-  const dx = pelota.x - obj.x, dy = pelota.y - obj.y;
-  return Math.sqrt(dx * dx + dy * dy) < pelota.radio + obj.radio;
-}
-
-function gameOver() {
-  estado.terminado = true;
-  pantallaGameOver.style.display = "block";
-  document.getElementById("levelReached").textContent = estado.nivel;
-  document.getElementById("finalScore").textContent = `Puntuación Final: ${Math.floor(estado.distancia * estado.multiplicador)}`;
+function finDelJuego() {
+  Estado.finalizado = 1;
+  document.getElementById("ir").style.display = "block";
+  document.getElementById("nl").contenidoDeTexto = Estado.nivel;
+  document.getElementById("pf").contenidoDeTexto = `Puntuación: ${~~(Estado.distancia * Estado.multiplicador)}`;
 }
 
 function actualizar() {
-  if (estado.terminado) return;
+  if (Estado.finalizado) return;
 
-  if (pelota.invencible && --pelota.tiempoInvencible <= 0) pelota.invencible = false;
-  if (pelota.enfriamientoSalto > 0) pelota.enfriamientoSalto--;
+  if (Bola.invencible && --Bola.tiempoInvencible <= 0) Bola.invencible = 0;
+  if (Bola.enfriamiento > 0) Bola.enfriamiento--;
 
-  const friccion = estado.modo === 'nieve' ? 0.20 : 0.5;
-  pelota.dx = teclas.derecha ? pelota.velocidad : teclas.izquierda ? -pelota.velocidad : pelota.dx * friccion;
-  pelota.dy += estado.gravedad;
-  pelota.x += pelota.dx;
-  pelota.y += pelota.dy;
+  Bola.dx = Teclas.derecha ? Bola.velocidad : Teclas.izquierda ? -Bola.velocidad : Bola.dx * (Estado.modo ? 0.2 : 0.5);
+  Bola.dy += 0.5;
+  Bola.x += Bola.dx;
+  Bola.y += Bola.dy;
 
-  if (pelota.y + pelota.radio > plataforma.y && pelota.dy > 0) {
-    pelota.y = plataforma.y - pelota.radio;
-    pelota.dy = 0;
-    pelota.puedeSaltar = true;
+  if (Bola.y + Bola.radio > Plataforma.y && Bola.dy > 0) {
+    Bola.y = Plataforma.y - Bola.radio;
+    Bola.dy = 0;
+    Bola.enSuelo = 1;
   }
 
-  pelota.x = Math.max(pelota.radio, Math.min(canvas.width - pelota.radio, pelota.x));
-  estado.velocidad = 1 + estado.distancia / 500;
-  estado.nivel = Math.floor(estado.distancia / 100) + 1;
+  Bola.x = Math.max(Bola.radio, Math.min(lienzo.width - Bola.radio, Bola.x));
+  Estado.velocidad = 1 + Estado.distancia / 500;
+  Estado.nivel = ~~(Estado.distancia / 100) + 1;
 
-  // Generar entidades
-  ['obstaculo', 'escalera', 'pua', 'enemigo', 'bomba'].forEach(tipo => {
-    const cfg = CFG[tipo];
-    const clave = tipo + 's';
-    if (++contadores[clave] > Math.max(40, cfg.int - estado.distancia / 50)) {
-      if (Math.random() > cfg.prob) generar(tipo);
-      contadores[clave] = 0;
+  // Generar obstáculos
+  [Estado.obstaculos, Estado.escaleras, Estado.pinchos, Estado.enemigos, Estado.bombas].forEach((arreglo, indice) => {
+    let config = Configuracion[indice];
+    if (++Estado.contadores[indice] > Math.max(40, config[3] - Estado.distancia / 50)) {
+      if (Math.random() > config[4]) {
+        let ancho = typeof config[0] === 'function' ? config[0]() : config[0];
+        let alto = typeof config[1] === 'function' ? config[1]() : config[1];
+        arreglo.push({
+          x: lienzo.width, y: Plataforma.y - (indice < 2 ? alto : 20),
+          ancho, alto, radio: indice > 2 ? ancho : 0, velocidad: config[2] * Estado.velocidad
+        });
+      }
+      Estado.contadores[indice] = 0;
     }
   });
 
   // Actualizar escaleras
-  for (let i = entidades.escaleras.length - 1; i >= 0; i--) {
-    const esc = entidades.escaleras[i];
-    esc.x -= esc.velocidad;
-    if (colisionCaja(esc) && pelota.dy >= 0) {
-      pelota.y = esc.y - pelota.radio;
-      pelota.dy = 0;
-      pelota.puedeSaltar = true;
+  Estado.escaleras = Estado.escaleras.filter(escalera => {
+    escalera.x -= escalera.velocidad;
+    if (colisionCaja(escalera) && Bola.dy >= 0) {
+      Bola.y = escalera.y - Bola.radio;
+      Bola.dy = 0;
+      Bola.enSuelo = 1;
     }
-    if (esc.x + esc.ancho < 0) {
-      entidades.escaleras.splice(i, 1);
-      estado.distancia += 20;
-      estado.multiplicador = Math.min(estado.multiplicador + 0.05, 5);
+    if (escalera.x + escalera.ancho < 0) {
+      Estado.distancia += 20;
+      Estado.multiplicador = Math.min(Estado.multiplicador + 0.05, 5);
+      return 0;
     }
-  }
+    return 1;
+  });
 
   // Actualizar obstáculos
-  for (let i = entidades.obstaculos.length - 1; i >= 0; i--) {
-    const obs = entidades.obstaculos[i];
-    obs.x -= obs.velocidad;
-    if (!pelota.invencible && colisionCaja(obs)) return gameOver();
-    if (obs.x + obs.ancho < 0) {
-      entidades.obstaculos.splice(i, 1);
-      estado.distancia += 10;
-    }
-  }
-
-  // Actualizar puas, enemigos, bombas
-  entidades.puas.forEach(p => {
-    p.x -= p.velocidad;
-    if (!pelota.invencible && colisionCaja(p)) {
-      entidades.explosiones.push({ x: pelota.x, y: pelota.y, radio: 10, cuadro: 0 });
-      gameOver();
-    }
+  Estado.obstaculos = Estado.obstaculos.filter(obstaculo => {
+    obstaculo.x -= obstaculo.velocidad;
+    if (!Bola.invencible && colisionCaja(obstaculo)) { finDelJuego(); return 0; }
+    if (obstaculo.x + obstaculo.ancho < 0) { Estado.distancia += 10; return 0; }
+    return 1;
   });
-  entidades.puas = entidades.puas.filter(p => p.x + p.ancho > 0);
 
-  entidades.enemigos.forEach(e => {
-    e.x -= e.velocidad;
-    if (!pelota.invencible && colisionCirculo(e)) {
-      entidades.explosiones.push({ x: pelota.x, y: pelota.y, radio: 10, cuadro: 0 });
-      gameOver();
+  // Pinchos
+  Estado.pinchos = Estado.pinchos.filter(pincho => {
+    pincho.x -= pincho.velocidad;
+    if (!Bola.invencible && colisionCaja(pincho)) {
+      Estado.explosiones.push({ x: Bola.x, y: Bola.y, radio: 10, frame: 0 });
+      finDelJuego();
+      return 0;
     }
+    return pincho.x + pincho.ancho > 0;
   });
-  entidades.enemigos = entidades.enemigos.filter(e => e.x + e.radio > 0);
 
-  for (let i = entidades.bombas.length - 1; i >= 0; i--) {
-    const b = entidades.bombas[i];
-    b.x -= b.velocidad;
-    if (!pelota.invencible && colisionCirculo(b)) {
-      entidades.explosiones.push({ x: b.x, y: b.y, radio: 10, cuadro: 0 });
-      entidades.bombas.splice(i, 1);
-      pelota.invencible = true;
-      pelota.tiempoInvencible = 60;
-      estado.distancia += 30;
+  // Enemigos
+  Estado.enemigos = Estado.enemigos.filter(enemigo => {
+    enemigo.x -= enemigo.velocidad;
+    if (!Bola.invencible && colisionCirculo(enemigo)) {
+      Estado.explosiones.push({ x: Bola.x, y: Bola.y, radio: 10, frame: 0 });
+      finDelJuego();
+      return 0;
     }
-  }
+    return enemigo.x + enemigo.radio > 0;
+  });
 
-  // UI
-  document.getElementById("score").textContent = estado.distancia;
-  document.getElementById("multiplier").textContent = `x${estado.multiplicador.toFixed(1)}`;
-  document.getElementById("level").textContent = estado.nivel;
-  document.getElementById("speedLevel").textContent = `${estado.velocidad.toFixed(1)}x`;
-  document.getElementById("finalPoints").textContent = Math.floor(estado.distancia * estado.multiplicador);
+  // Bombas
+  Estado.bombas = Estado.bombas.filter(bomba => {
+    bomba.x -= bomba.velocidad;
+    if (!Bola.invencible && colisionCirculo(bomba)) {
+      Estado.explosiones.push({ x: bomba.x, y: bomba.y, radio: 10, frame: 0 });
+      Bola.invencible = 1;
+      Bola.tiempoInvencible = 60;
+      Estado.distancia += 30;
+      return 0;
+    }
+    return bomba.x + bomba.radio > 0;
+  });
+
+  // Actualizar interfaz
+  document.getElementById("d").contenidoDeTexto = Estado.distancia;
+  document.getElementById("x").contenidoDeTexto = `x${Estado.multiplicador.toFixed(1)}`;
+  document.getElementById("n").contenidoDeTexto = Estado.nivel;
+  document.getElementById("v").contenidoDeTexto = `${Estado.velocidad.toFixed(1)}x`;
+  document.getElementById("p").contenidoDeTexto = ~~(Estado.distancia * Estado.multiplicador);
 }
 
-function reiniciarJuego() {
-  Object.assign(estado, { terminado: false, distancia: 0, multiplicador: 1, nivel: 1, velocidad: 1, modo: 'lluvia' });
-  pantallaGameOver.style.display = "none";
-  document.body.className = '';
-  Object.assign(pelota, { x: 100, y: 380, dx: 0, dy: 0, invencible: false, puedeSaltar: true, enfriamientoSalto: 0 });
-  Object.keys(entidades).forEach(k => entidades[k] = []);
-  Object.keys(contadores).forEach(k => contadores[k] = 0);
+function reiniciar() {
+  Estado = { 
+    modo: Estado.modo, finalizado: 0, distancia: 0, nivel: 1, multiplicador: 1, velocidad: 1, 
+    particulas: Estado.particulas, hielo: Estado.hielo, escaleras: [], obstaculos: [], 
+    pinchos: [], enemigos: [], bombas: [], explosiones: [], particulasSalto: [], contadores: [0,0,0,0,0] 
+  };
+  document.getElementById("ir").style.display = "none";
+  Bola = { x: 100, y: 380, radio: 15, dx: 0, dy: 0, velocidad: 6, salto: 14, enSuelo: 1, enfriamiento: 0, invencible: 0, tiempoInvencible: 0 };
   inicializarParticulas();
-  inicializarBloquesHielo();
+  inicializarHielo();
 }
 
-function buclePrincipal() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  dibujarPlataforma();
-  dibujarParticulas();
-  dibujarBloquesHielo();
-  ['escaleras', 'obstaculos', 'puas', 'enemigos', 'bombas'].forEach(tipo => 
-    entidades[tipo].forEach(e => dibujarEntidad(tipo.slice(0, -1), e))
-  );
-  dibujarExplosiones();
-  dibujarParticulasSalto();
-  dibujarPelota();
+function bucle() {
+  dibujar();
   actualizar();
-  requestAnimationFrame(buclePrincipal);
+  requestAnimationFrame(bucle);
 }
 
 inicializarParticulas();
-inicializarBloquesHielo();
-buclePrincipal();
+inicializarHielo();
+bucle();
   </script>
 
 </body>
