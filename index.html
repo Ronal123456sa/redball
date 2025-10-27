@@ -4,28 +4,631 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pelotita Roja Mejorada - Aventura con Rebote</title>
-  <link rel="stylesheet" href="css/style.css">
+<!-- <link rel="stylesheet" href="css/style.css"> -->
+<style>
+   * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.5s;
+      overflow: hidden;
+    }
+
+    body.night-mode {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    body.snow-mode {
+      background: linear-gradient(135deg, #e8f4f8 0%, #b3e5fc 100%);
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.5s;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    body.night-mode .container {
+      background: rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.snow-mode .container {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(100, 200, 255, 0.3);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .theme-btn {
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      font-size: 0.9em;
+    }
+
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .theme-btn.active {
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 2.2em;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .level-info {
+      color: white;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .info {
+      color: white;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    #gameCanvas {
+      background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 100%);
+      display: block;
+      margin: 0 auto;
+      border: 8px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      max-width: 100%;
+      height: auto;
+      transition: background 0.5s;
+    }
+
+    body.night-mode #gameCanvas {
+      background: linear-gradient(180deg, #0f3460 0%, #1a4d6d 100%);
+    }
+
+    body.snow-mode #gameCanvas {
+      background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+
+    .stats {
+      color: white;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 1em;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    .game-over {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 1.5em;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      border: 3px solid #FF4444;
+    }
+
+    .game-over h2 {
+      margin-bottom: 20px;
+      color: #FF4444;
+      font-size: 2em;
+    }
+
+    .game-over button {
+      margin-top: 20px;
+      padding: 15px 40px;
+      font-size: 1.1em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+    }
+
+    .game-over button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .moon {
+      position: absolute;
+      top: 50px;
+      right: 100px;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle at 30px 30px, #f9f3c5, #e6d894);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(249, 243, 197, 0.7);
+      display: none;
+    }
+
+    body.night-mode .moon {
+      display: block;
+    }
+</style>
 </head>
 <body>
-  <div id="juego">
-    <canvas id="c" width="800" height="500"></canvas>
-    <div id="interfaz">
-      <div class="estadística">📏 <span id="d">0</span>m</div>
-      <div class="estadística">🔥 <span id="x">x1.0</span></div>
-      <div class="estadística">📊 Nivel <span id="n">1</span></div>
-      <div class="estadística">⚡ <span id="v">1.0x</span></div>
-      <div class="estadística">🏆 <span id="p">0</span></div>
+  <div class="moon"></div>
+  <div class="container">
+    <div class="controls">
+      <button class="theme-btn" onclick="changeMode('rain')">🌧️ Lluvia</button>
+      <button class="theme-btn" onclick="changeMode('night')">🌙 Oscuro</button>
+      <button class="theme-btn" onclick="changeMode('snow')">❄️ Hielo</button>
+      <div class="stat-item">Modo Actual: <span id="modeDisplay">🌧️ Lluvia</span></div>
     </div>
-    <div id="ir">
-      <h2>¡Game Over!</h2>
-      <p>Nivel alcanzado: <span id="nl">1</span></p>
-      <p id="pf">Puntuación: 0</p>
-      <small>Presiona ESPACIO para reiniciar</small>
+    <h1>🔴 Pelotita Roja Mejorada</h1>
+    <div class="level-info">
+      📊 Nivel: <span id="level">1</span> | 🚀 Velocidad: <span id="speedLevel">1x</span>
     </div>
-    <button id="m" onclick="cambiarModo(Estado.modo ? 0 : 1)">🌙 Noche</button>
+    <div class="info">
+      <strong>Controles:</strong> ⬅️ Izquierda | ➡️ Derecha | ⬆️ Saltar<br>
+      🪜 Sube escaleras 📍 Esquiva obstáculos ⚠️ Si chocas, presiona ESPACIO
+    </div>
+    <canvas id="gameCanvas" width="900" height="500"></canvas>
+    <div class="stats">
+      <div class="stat-item">Distancia: <span id="score">0</span></div>
+      <div class="stat-item">Multiplicador: <span id="multiplier">x1.0</span></div>
+      <div class="stat-item">Puntuación: <span id="finalPoints">0</span></div>
+    </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <div class="game-over" id="gameOverScreen">
+    <h2>💥 ¡CHOCASTE!</h2>
+    <p>Nivel alcanzado: <span id="levelReached">1</span></p>
+    <p id="finalScore">Puntuación Final: 0</p>
+    <button onclick="restartGame()">Presiona ESPACIO o haz clic para reiniciar</button>
+  </div>
+
+  <script> 
+    const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const pantallaGameOver = document.getElementById("gameOverScreen");
+
+// Estado unificado
+const estado = {
+  modo: 'noche', terminado: false, distancia: 0, nivel: 1,
+  multiplicador: 1, velocidad: 1, gravedad: 0.5
+};
+
+const pelota = {
+  x: 100, y: 380, radio: 15, dx: 0, dy: 0, velocidad: 6,
+  poderSalto: 14, puedeSaltar: true, enfriamientoSalto: 0,
+  invencible: false, tiempoInvencible: 0
+};
+
+const plataforma = { x: 0, y: 420, ancho: canvas.width, alto: 80 };
+const teclas = { derecha: false, izquierda: false, arriba: false };
+const entidades = { particulas: [], bloquesHielo: [], obstaculos: [], escaleras: [], puas: [], enemigos: [], bombas: [], explosiones: [], particulasSalto: [] };
+const contadores = { obstaculos: 0, escaleras: 0, puas: 0, enemigos: 0, bombas: 0 };
+
+// Configuraciones de entidades
+const CFG = {
+  obstaculo: { w: () => 25 + Math.random() * 25, h: () => 35 + Math.random() * 35, v: 5, int: 50, prob: 0.3, puntos: 10 },
+  escalera: { w: 60, h: () => 80 + Math.random() * 60, v: 5, int: 140, prob: 1, puntos: 20, pasos: 4 },
+  pua: { w: 30, h: 20, v: 5, int: 80, prob: 0.5, puntos: 0 },
+  enemigo: { r: 15, v: 4, int: 160, prob: 0.6, puntos: 0 },
+  bomba: { r: 12, v: 3, int: 200, prob: 0.7, puntos: 30 }
+};
+
+// ==================== INICIALIZACIÓN ====================
+function inicializarParticulas() {
+  entidades.particulas = [];
+  const cant = estado.modo === 'lluvia' ? 150 : 100;
+  for (let i = 0; i < cant; i++) {
+    entidades.particulas.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      longitud: estado.modo === 'lluvia' ? 10 + Math.random() * 10 : 0,
+      tamaño: estado.modo === 'nieve' ? 3 + Math.random() * 5 : 1,
+      velocidad: estado.modo === 'lluvia' ? 5 + Math.random() * 5 : 1 + Math.random() * 2,
+      opacidad: Math.random() * 0.5 + 0.3,
+      viento: Math.random() * 2 - 1
+    });
+  }
+}
+
+function inicializarBloquesHielo() {
+  entidades.bloquesHielo = estado.modo === 'nieve' ? Array(10).fill().map(() => ({
+    x: Math.random() * canvas.width, y: Math.random() * 300,
+    ancho: 40 + Math.random() * 40, alto: 20 + Math.random() * 20,
+    rotacion: Math.random() * Math.PI * 2, velocidad: 0.5 + Math.random()
+  })) : [];
+}
+
+function cambiarModo(modo) {
+  estado.modo = modo;
+  document.body.className = modo === 'noche' ? 'modo-noche' : modo === 'nieve' ? 'modo-nieve' : '';
+  document.getElementById("modeDisplay").textContent = { lluvia: '🌧️ Lluvia', noche: '🌙 Oscuro', nieve: '❄️ Hielo' }[modo];
+  inicializarParticulas();
+  inicializarBloquesHielo();
+}
+
+// ==================== CONTROLES ====================
+document.addEventListener("keydown", e => {
+  if (e.code === "ArrowRight") teclas.derecha = true;
+  if (e.code === "ArrowLeft") teclas.izquierda = true;
+  if (e.code === "ArrowUp") {
+    teclas.arriba = true;
+    if (pelota.puedeSaltar && pelota.enfriamientoSalto <= 0) {
+      pelota.dy = -pelota.poderSalto;
+      pelota.puedeSaltar = false;
+      pelota.enfriamientoSalto = 10;
+      crearParticulasSalto();
+    }
+  }
+  if (e.code === "Space" && estado.terminado) reiniciarJuego();
+});
+
+document.addEventListener("keyup", e => {
+  if (e.code === "ArrowRight") teclas.derecha = false;
+  if (e.code === "ArrowLeft") teclas.izquierda = false;
+  if (e.code === "ArrowUp") teclas.arriba = false;
+});
+
+// ==================== DIBUJO ====================
+function dibujarParticulas() {
+  if (estado.modo === 'lluvia') {
+    ctx.strokeStyle = 'rgba(200, 220, 255, 0.4)';
+    ctx.lineWidth = 1;
+    entidades.particulas.forEach(p => {
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x - 2, p.y + p.longitud);
+      ctx.stroke();
+      p.y += p.velocidad * estado.velocidad;
+      p.x -= 2;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+    });
+  } else if (estado.modo === 'nieve') {
+    entidades.particulas.forEach(p => {
+      ctx.fillStyle = `rgba(255, 255, 255, ${p.opacidad})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.tamaño, 0, Math.PI * 2);
+      ctx.fill();
+      p.y += p.velocidad * estado.velocidad;
+      p.x += p.viento;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+    });
+  }
+}
+
+function dibujarBloquesHielo() {
+  if (estado.modo !== 'nieve') return;
+  entidades.bloquesHielo.forEach(h => {
+    ctx.save();
+    ctx.translate(h.x + h.ancho/2, h.y + h.alto/2);
+    ctx.rotate(h.rotacion);
+    ctx.fillStyle = 'rgba(200, 230, 255, 0.7)';
+    ctx.fillRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-h.ancho/2, -h.alto/2, h.ancho, h.alto);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.fillRect(-h.ancho/2 + 5, -h.alto/2 + 5, h.ancho/3, h.alto/3);
+    ctx.restore();
+    h.x -= h.velocidad * estado.velocidad;
+    h.rotacion += 0.01;
+    if (h.x + h.ancho < 0) { h.x = canvas.width; h.y = Math.random() * 300; }
+  });
+}
+
+function dibujarPelota() {
+  if (pelota.invencible && Math.floor(pelota.tiempoInvencible / 5) % 2 === 0) return;
+  const grad = ctx.createRadialGradient(pelota.x - 5, pelota.y - 5, 0, pelota.x, pelota.y, pelota.radio);
+  grad.addColorStop(0, "#FF6666");
+  grad.addColorStop(1, "#CC0000");
+  ctx.beginPath();
+  ctx.arc(pelota.x, pelota.y, pelota.radio, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,0.3)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function dibujarPlataforma() {
+  const grad = ctx.createLinearGradient(0, plataforma.y, 0, plataforma.y + plataforma.alto);
+  if (estado.modo === 'nieve') {
+    grad.addColorStop(0, "#B3E5FC");
+    grad.addColorStop(1, "#4FC3F7");
+  } else {
+    grad.addColorStop(0, "#32CD32");
+    grad.addColorStop(1, "#1a7a1a");
+  }
+  ctx.fillStyle = grad;
+  ctx.fillRect(plataforma.x, plataforma.y, plataforma.ancho, plataforma.alto);
+}
+
+function dibujarEntidad(tipo, e) {
+  if (tipo === 'obstaculo') {
+    const grad = ctx.createLinearGradient(e.x, e.y, e.x, e.y + e.alto);
+    grad.addColorStop(0, "#FF6B6B");
+    grad.addColorStop(1, "#C92A2A");
+    ctx.fillStyle = grad;
+    ctx.fillRect(e.x, e.y, e.ancho, e.alto);
+  } else if (tipo === 'escalera') {
+    const paso = e.ancho / e.pasos, altura = e.alto / e.pasos;
+    for (let i = 0; i < e.pasos; i++) {
+      ctx.fillStyle = "#D4A574";
+      ctx.fillRect(e.x + i * paso, e.y + i * altura, paso, altura);
+      ctx.strokeStyle = "#5D4E06";
+      ctx.strokeRect(e.x + i * paso, e.y + i * altura, paso, altura);
+    }
+  } else if (tipo === 'pua') {
+    ctx.fillStyle = '#8B0000';
+    ctx.beginPath();
+    ctx.moveTo(e.x, e.y + e.alto);
+    ctx.lineTo(e.x + e.ancho/2, e.y);
+    ctx.lineTo(e.x + e.ancho, e.y + e.alto);
+    ctx.fill();
+  } else if (tipo === 'enemigo' || tipo === 'bomba') {
+    ctx.fillStyle = tipo === 'enemigo' ? '#8A2BE2' : '#333333';
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, e.radio, 0, Math.PI * 2);
+    ctx.fill();
+    if (tipo === 'bomba') {
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(e.x - 2, e.y - e.radio - 5, 4, 8);
+    }
+  }
+}
+
+function crearParticulasSalto() {
+  for (let i = 0; i < 8; i++) {
+    entidades.particulasSalto.push({
+      x: pelota.x, y: pelota.y + pelota.radio,
+      dx: (Math.random() - 0.5) * 4, dy: -Math.random() * 3,
+      tamaño: 2 + Math.random() * 3, vida: 20 + Math.random() * 10
+    });
+  }
+}
+
+function dibujarParticulasSalto() {
+  for (let i = entidades.particulasSalto.length - 1; i >= 0; i--) {
+    const p = entidades.particulasSalto[i];
+    ctx.fillStyle = '#FFAA00';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.tamaño, 0, Math.PI * 2);
+    ctx.fill();
+    p.x += p.dx;
+    p.y += p.dy;
+    p.dy += 0.1;
+    p.vida--;
+    if (p.vida <= 0) entidades.particulasSalto.splice(i, 1);
+  }
+}
+
+function dibujarExplosiones() {
+  for (let i = entidades.explosiones.length - 1; i >= 0; i--) {
+    const e = entidades.explosiones[i];
+    ctx.fillStyle = `rgba(255, ${100 + e.cuadro * 10}, 0, ${1 - e.cuadro/20})`;
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, e.radio, 0, Math.PI * 2);
+    ctx.fill();
+    e.cuadro++;
+    e.radio += 2;
+    if (e.cuadro > 20) entidades.explosiones.splice(i, 1);
+  }
+}
+
+// ==================== GENERACIÓN Y ACTUALIZACIÓN UNIFICADA ====================
+function generar(tipo) {
+  const cfg = CFG[tipo];
+  const obj = { x: canvas.width, velocidad: cfg.v * estado.velocidad };
+  
+  if (tipo === 'obstaculo') Object.assign(obj, { y: plataforma.y - cfg.h(), ancho: cfg.w(), alto: cfg.h() });
+  else if (tipo === 'escalera') Object.assign(obj, { y: plataforma.y - cfg.h(), ancho: cfg.w, alto: cfg.h(), pasos: cfg.pasos });
+  else if (tipo === 'pua') Object.assign(obj, { y: plataforma.y - 20, ancho: cfg.w, alto: cfg.h });
+  else Object.assign(obj, { y: plataforma.y - 20, radio: cfg.r });
+  
+  entidades[tipo + 's'].push(obj);
+}
+
+function colisionCaja(obj) {
+  return pelota.x + pelota.radio > obj.x && pelota.x - pelota.radio < obj.x + obj.ancho &&
+         pelota.y + pelota.radio > obj.y && pelota.y - pelota.radio < obj.y + obj.alto;
+}
+
+function colisionCirculo(obj) {
+  const dx = pelota.x - obj.x, dy = pelota.y - obj.y;
+  return Math.sqrt(dx * dx + dy * dy) < pelota.radio + obj.radio;
+}
+
+function gameOver() {
+  estado.terminado = true;
+  pantallaGameOver.style.display = "block";
+  document.getElementById("levelReached").textContent = estado.nivel;
+  document.getElementById("finalScore").textContent = `Puntuación Final: ${Math.floor(estado.distancia * estado.multiplicador)}`;
+}
+
+function actualizar() {
+  if (estado.terminado) return;
+
+  if (pelota.invencible && --pelota.tiempoInvencible <= 0) pelota.invencible = false;
+  if (pelota.enfriamientoSalto > 0) pelota.enfriamientoSalto--;
+
+  const friccion = estado.modo === 'nieve' ? 0.20 : 0.5;
+  pelota.dx = teclas.derecha ? pelota.velocidad : teclas.izquierda ? -pelota.velocidad : pelota.dx * friccion;
+  pelota.dy += estado.gravedad;
+  pelota.x += pelota.dx;
+  pelota.y += pelota.dy;
+
+  if (pelota.y + pelota.radio > plataforma.y && pelota.dy > 0) {
+    pelota.y = plataforma.y - pelota.radio;
+    pelota.dy = 0;
+    pelota.puedeSaltar = true;
+  }
+
+  pelota.x = Math.max(pelota.radio, Math.min(canvas.width - pelota.radio, pelota.x));
+  estado.velocidad = 1 + estado.distancia / 500;
+  estado.nivel = Math.floor(estado.distancia / 100) + 1;
+
+  // Generar entidades
+  ['obstaculo', 'escalera', 'pua', 'enemigo', 'bomba'].forEach(tipo => {
+    const cfg = CFG[tipo];
+    const clave = tipo + 's';
+    if (++contadores[clave] > Math.max(40, cfg.int - estado.distancia / 50)) {
+      if (Math.random() > cfg.prob) generar(tipo);
+      contadores[clave] = 0;
+    }
+  });
+
+  // Actualizar escaleras
+  for (let i = entidades.escaleras.length - 1; i >= 0; i--) {
+    const esc = entidades.escaleras[i];
+    esc.x -= esc.velocidad;
+    if (colisionCaja(esc) && pelota.dy >= 0) {
+      pelota.y = esc.y - pelota.radio;
+      pelota.dy = 0;
+      pelota.puedeSaltar = true;
+    }
+    if (esc.x + esc.ancho < 0) {
+      entidades.escaleras.splice(i, 1);
+      estado.distancia += 20;
+      estado.multiplicador = Math.min(estado.multiplicador + 0.05, 5);
+    }
+  }
+
+  // Actualizar obstáculos
+  for (let i = entidades.obstaculos.length - 1; i >= 0; i--) {
+    const obs = entidades.obstaculos[i];
+    obs.x -= obs.velocidad;
+    if (!pelota.invencible && colisionCaja(obs)) return gameOver();
+    if (obs.x + obs.ancho < 0) {
+      entidades.obstaculos.splice(i, 1);
+      estado.distancia += 10;
+    }
+  }
+
+  // Actualizar puas, enemigos, bombas
+  entidades.puas.forEach(p => {
+    p.x -= p.velocidad;
+    if (!pelota.invencible && colisionCaja(p)) {
+      entidades.explosiones.push({ x: pelota.x, y: pelota.y, radio: 10, cuadro: 0 });
+      gameOver();
+    }
+  });
+  entidades.puas = entidades.puas.filter(p => p.x + p.ancho > 0);
+
+  entidades.enemigos.forEach(e => {
+    e.x -= e.velocidad;
+    if (!pelota.invencible && colisionCirculo(e)) {
+      entidades.explosiones.push({ x: pelota.x, y: pelota.y, radio: 10, cuadro: 0 });
+      gameOver();
+    }
+  });
+  entidades.enemigos = entidades.enemigos.filter(e => e.x + e.radio > 0);
+
+  for (let i = entidades.bombas.length - 1; i >= 0; i--) {
+    const b = entidades.bombas[i];
+    b.x -= b.velocidad;
+    if (!pelota.invencible && colisionCirculo(b)) {
+      entidades.explosiones.push({ x: b.x, y: b.y, radio: 10, cuadro: 0 });
+      entidades.bombas.splice(i, 1);
+      pelota.invencible = true;
+      pelota.tiempoInvencible = 60;
+      estado.distancia += 30;
+    }
+  }
+
+  // UI
+  document.getElementById("score").textContent = estado.distancia;
+  document.getElementById("multiplier").textContent = `x${estado.multiplicador.toFixed(1)}`;
+  document.getElementById("level").textContent = estado.nivel;
+  document.getElementById("speedLevel").textContent = `${estado.velocidad.toFixed(1)}x`;
+  document.getElementById("finalPoints").textContent = Math.floor(estado.distancia * estado.multiplicador);
+}
+
+function reiniciarJuego() {
+  Object.assign(estado, { terminado: false, distancia: 0, multiplicador: 1, nivel: 1, velocidad: 1, modo: 'lluvia' });
+  pantallaGameOver.style.display = "none";
+  document.body.className = '';
+  Object.assign(pelota, { x: 100, y: 380, dx: 0, dy: 0, invencible: false, puedeSaltar: true, enfriamientoSalto: 0 });
+  Object.keys(entidades).forEach(k => entidades[k] = []);
+  Object.keys(contadores).forEach(k => contadores[k] = 0);
+  inicializarParticulas();
+  inicializarBloquesHielo();
+}
+
+function buclePrincipal() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  dibujarPlataforma();
+  dibujarParticulas();
+  dibujarBloquesHielo();
+  ['escaleras', 'obstaculos', 'puas', 'enemigos', 'bombas'].forEach(tipo => 
+    entidades[tipo].forEach(e => dibujarEntidad(tipo.slice(0, -1), e))
+  );
+  dibujarExplosiones();
+  dibujarParticulasSalto();
+  dibujarPelota();
+  actualizar();
+  requestAnimationFrame(buclePrincipal);
+}
+
+inicializarParticulas();
+inicializarBloquesHielo();
+buclePrincipal();
+  </script>
 
 </body>
 </html>
